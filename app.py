@@ -1,1176 +1,1299 @@
-from pathlib import Path
 import html
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
 
 # ============================================================
-# BLUEPATH | BLUE ECONOMY DECISION SUPPORT SYSTEM
+# BLUEPATH
+# BLUE ECONOMY x LEAN CONSTRUCTION
+# Interactive Decision-Support Application
 # ============================================================
 
+
+# ------------------------------------------------------------
+# 1. PAGE CONFIGURATION
+# ------------------------------------------------------------
+
 st.set_page_config(
-    page_title="BluePath | Decision Support System",
-    page_icon="",
+    page_title="BluePath | Blue Economy and Lean Construction",
+    page_icon="🌊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 
-# ============================================================
-# APPLICATION CONFIGURATION
-# ============================================================
+# ------------------------------------------------------------
+# 2. APPLICATION CONFIGURATION
+# ------------------------------------------------------------
 
-APP_TITLE = "BLUEPATH"
-APP_SUBTITLE = "Marine Construction Decision Support System"
+BASE_DIR = Path(__file__).parent
 
-EXCEL_FILE = Path(__file__).parent / "portal.xlsx"
-
-COL_IMPACT = "Impact of Marine Construction"
-COL_PRACTICE = "Blue Economy Practice"
-COL_CHALLENGE = "Challenges to Implement Blue Economy Practice"
-COL_LEAN = "Lean Principles"
-
-REQUIRED_COLUMNS = [
-    COL_IMPACT,
-    COL_PRACTICE,
-    COL_CHALLENGE,
-    COL_LEAN
+# Support both possible Excel filenames
+EXCEL_CANDIDATES = [
+    BASE_DIR / "portal.xlsx",
+    BASE_DIR / "Portal.xlsx"
 ]
 
-
-# ============================================================
-# PROFESSIONAL INTERFACE STYLING
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-
-    /* General application */
-    .stApp {
-        background-color: #F4F6F8;
-        color: #263746;
-        font-family: Arial, Helvetica, sans-serif;
-    }
-
-    #MainMenu {
-        visibility: hidden;
-    }
-
-    footer {
-        visibility: hidden;
-    }
-
-    header {
-        background-color: transparent;
-    }
-
-    .block-container {
-        padding-top: 1.3rem;
-        padding-bottom: 3rem;
-        max-width: 1350px;
-    }
-
-    /* Main header */
-    .brand-header {
-        background-color: #142F43;
-        padding: 24px 30px;
-        border-bottom: 4px solid #159A91;
-        margin-bottom: 22px;
-    }
-
-    .brand-name {
-        color: #FFFFFF;
-        font-size: 25px;
-        font-weight: 800;
-        letter-spacing: 2px;
-        margin: 0;
-    }
-
-    .brand-subtitle {
-        color: #D5E1E8;
-        font-size: 13px;
-        margin-top: 7px;
-        letter-spacing: 0.5px;
-    }
-
-    .brand-tag {
-        color: #8DD6CC;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-    }
-
-    /* Section headings */
-    .section-heading {
-        color: #142F43;
-        font-size: 21px;
-        font-weight: 700;
-        margin-top: 8px;
-        margin-bottom: 5px;
-    }
-
-    .section-description {
-        color: #657786;
-        font-size: 13px;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .small-label {
-        color: #617383;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 5px;
-    }
-
-    /* Progress */
-    .progress-wrapper {
-        background-color: #FFFFFF;
-        border: 1px solid #DCE3E8;
-        padding: 16px 20px;
-        margin-bottom: 24px;
-    }
-
-    .progress-title {
-        font-size: 12px;
-        font-weight: 700;
-        color: #526575;
-        margin-bottom: 10px;
-        letter-spacing: 0.5px;
-    }
-
-    .progress-track {
-        height: 6px;
-        width: 100%;
-        background-color: #E6ECEF;
-    }
-
-    .progress-fill {
-        height: 6px;
-        background-color: #159A91;
-    }
-
-    .progress-steps {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 9px;
-        font-size: 11px;
-        color: #71808C;
-    }
-
-    .progress-active {
-        color: #087F78;
-        font-weight: 700;
-    }
-
-    /* Selection panels */
-    .selection-panel {
-        background-color: #FFFFFF;
-        border: 1px solid #DCE3E8;
-        border-left: 4px solid #159A91;
-        padding: 19px 22px;
-        margin-bottom: 15px;
-    }
-
-    .selection-title {
-        font-size: 14px;
-        font-weight: 700;
-        color: #18384D;
-        margin-bottom: 8px;
-    }
-
-    .selection-text {
-        font-size: 13px;
-        color: #526575;
-        line-height: 1.6;
-    }
-
-    /* Information cards */
-    .metric-panel {
-        background-color: #FFFFFF;
-        border: 1px solid #DCE3E8;
-        padding: 17px 20px;
-        min-height: 100px;
-    }
-
-    .metric-number {
-        font-size: 25px;
-        font-weight: 700;
-        color: #142F43;
-    }
-
-    .metric-caption {
-        font-size: 12px;
-        color: #71808C;
-        margin-top: 4px;
-    }
-
-    /* Result panels */
-    .result-panel {
-        background-color: #FFFFFF;
-        border: 1px solid #DCE3E8;
-        padding: 20px 22px;
-        margin-bottom: 12px;
-    }
-
-    .result-number {
-        display: inline-block;
-        background-color: #E7F3F1;
-        color: #087F78;
-        font-size: 12px;
-        font-weight: 700;
-        padding: 5px 9px;
-        margin-right: 10px;
-        min-width: 32px;
-        text-align: center;
-    }
-
-    .result-name {
-        color: #18384D;
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.5;
-    }
-
-    .result-description {
-        color: #71808C;
-        font-size: 12px;
-        margin-top: 6px;
-    }
-
-    /* Buttons */
-    .stButton > button {
-        border-radius: 2px;
-        border: 1px solid #C8D3DA;
-        min-height: 40px;
-        font-weight: 600;
-        font-size: 13px;
-        background-color: #FFFFFF;
-        color: #18384D;
-    }
-
-    .stButton > button:hover {
-        border-color: #159A91;
-        color: #087F78;
-        background-color: #F0F8F7;
-    }
-
-    /* Primary buttons */
-    .stButton > button[kind="primary"] {
-        background-color: #142F43;
-        color: #FFFFFF;
-        border: 1px solid #142F43;
-    }
-
-    .stButton > button[kind="primary"]:hover {
-        background-color: #087F78;
-        border-color: #087F78;
-        color: #FFFFFF;
-    }
-
-    /* Input labels */
-    .stSelectbox label,
-    .stTextInput label {
-        color: #18384D !important;
-        font-size: 13px !important;
-        font-weight: 700 !important;
-    }
-
-    /* Dataframe */
-    [data-testid="stDataFrame"] {
-        border: 1px solid #DCE3E8;
-    }
-
-    /* Footer */
-    .app-footer {
-        border-top: 1px solid #DCE3E8;
-        margin-top: 45px;
-        padding-top: 15px;
-        color: #84919B;
-        font-size: 11px;
-        text-align: center;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True
+EXCEL_FILE = next(
+    (file for file in EXCEL_CANDIDATES if file.exists()),
+    EXCEL_CANDIDATES[0]
 )
 
+IMPACT_COL = "Impact of Marine Construction"
+PRACTICE_COL = "Blue Economy Practice"
+CHALLENGE_COL = "Challenges to Implement Blue Economy Practice"
+LEAN_COL = "Lean Principles"
 
-# ============================================================
-# LOAD AND VALIDATE EXCEL DATA
-# ============================================================
+REQUIRED_COLUMNS = [
+    IMPACT_COL,
+    PRACTICE_COL,
+    CHALLENGE_COL,
+    LEAN_COL
+]
+
+EXPECTED_LEAN_COUNT = 5
+
+
+# ------------------------------------------------------------
+# 3. CUSTOM VISUAL DESIGN
+# ------------------------------------------------------------
+
+st.markdown("""
+<style>
+
+/* ==========================================
+  GENERAL APPEARANCE
+========================================== */
+
+.stApp {
+    background:
+        linear-gradient(
+            140deg,
+            #F0FAFA 0%,
+            #F6FAFF 48%,
+            #EFF8F3 100%
+        );
+
+    color: #294B5C;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+#MainMenu,
+footer,
+header {
+    visibility: hidden;
+}
+
+.block-container {
+    max-width: 1250px;
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+}
+
+
+/* ==========================================
+  BRANDING
+========================================== */
+
+.brand {
+    font-size: 2rem;
+    font-weight: 850;
+    letter-spacing: -1px;
+    color: #087F83;
+}
+
+.brand-subtitle {
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 3px;
+    color: #68858E;
+}
+
+
+/* ==========================================
+  HERO SECTION
+========================================== */
+
+.hero {
+    background:
+        linear-gradient(
+            120deg,
+            #076D78 0%,
+            #0B9397 55%,
+            #45B89B 100%
+        );
+
+    border-radius: 25px;
+    padding: 55px 45px;
+    margin-top: 25px;
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 15px 35px rgba(8, 127, 131, 0.15);
+
+    color: white;
+    animation: fadeIn 0.8s ease;
+}
+
+.hero h1 {
+    font-size: 2.8rem;
+    font-weight: 850;
+    line-height: 1.2;
+    color: white;
+}
+
+.hero p {
+    font-size: 1.04rem;
+    line-height: 1.9;
+    color: #EDFFFF;
+    max-width: 820px;
+}
+
+.hero-label {
+    font-size: 0.78rem;
+    letter-spacing: 3px;
+    font-weight: 800;
+    color: #D4FFFF;
+}
+
+
+/* ==========================================
+  SECTION HEADINGS
+========================================== */
+
+.section-title {
+    font-size: 1.85rem;
+    font-weight: 850;
+    color: #126F78;
+    margin-bottom: 8px;
+}
+
+.section-description {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #647F8C;
+}
+
+.step-label {
+    font-size: 0.76rem;
+    letter-spacing: 2.5px;
+    font-weight: 850;
+    color: #159B91;
+    text-transform: uppercase;
+}
+
+
+/* ==========================================
+  INFORMATION CARDS
+========================================== */
+
+.info-card {
+    background: rgba(255,255,255,0.96);
+    border: 1px solid #DCEBEC;
+    border-radius: 17px;
+
+    padding: 21px;
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 5px 17px rgba(34,91,104,0.05);
+
+    transition: all 0.25s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 11px 27px rgba(34,91,104,0.11);
+}
+
+
+/* ==========================================
+  NUMBER CIRCLES
+========================================== */
+
+.number-circle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 39px;
+    height: 39px;
+
+    border-radius: 50%;
+
+    background: #E0F3EF;
+    color: #087F83;
+
+    font-size: 0.95rem;
+    font-weight: 850;
+
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+
+/* ==========================================
+  INFORMATION BANNERS
+========================================== */
+
+.notice {
+    background: #E8F5F5;
+    border-left: 5px solid #159D9B;
+
+    border-radius: 9px;
+    padding: 17px 20px;
+
+    margin: 18px 0;
+
+    color: #365E68;
+    line-height: 1.75;
+}
+
+
+/* ==========================================
+  LEAN PRINCIPLE CARDS
+========================================== */
+
+.lean-card {
+    background:
+        linear-gradient(
+            120deg,
+            #E8F6ED,
+            #F5FBF6
+        );
+
+    border: 1px solid #CBE7D2;
+    border-radius: 16px;
+
+    padding: 20px;
+    margin-bottom: 13px;
+
+    transition: all 0.25s ease;
+}
+
+.lean-card:hover {
+    transform: translateX(5px);
+
+    box-shadow:
+        0 8px 20px rgba(48,127,83,0.09);
+}
+
+.priority-label {
+    font-size: 0.73rem;
+    font-weight: 850;
+    letter-spacing: 1.2px;
+    color: #24834E;
+    text-transform: uppercase;
+}
+
+
+/* ==========================================
+  NAVIGATION BUTTONS
+========================================== */
+
+.stButton > button {
+    min-height: 45px;
+
+    border-radius: 11px;
+    border: 1px solid #C9E2E0;
+
+    background: #FFFFFF;
+    color: #167D80;
+
+    font-weight: 750;
+
+    padding: 0.65rem 1rem;
+
+    transition: all 0.25s ease;
+}
+
+.stButton > button:hover {
+    background: #E5F5F1;
+    border-color: #159D9B;
+    color: #075E64;
+
+    transform: translateY(-2px);
+}
+
+.stButton > button[kind="primary"] {
+    background:
+        linear-gradient(
+            100deg,
+            #087F83,
+            #21A89D
+        );
+
+    color: white;
+    border: none;
+}
+
+.stButton > button[kind="primary"]:hover {
+    background: #076C72;
+    color: white;
+}
+
+
+/* ==========================================
+  PROGRESS BAR
+========================================== */
+
+.stProgress > div > div > div {
+    background:
+        linear-gradient(
+            90deg,
+            #087F83,
+            #58B99A
+        );
+}
+
+
+/* ==========================================
+  ANIMATIONS
+========================================== */
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+.animate {
+    animation: fadeIn 0.65s ease;
+}
+
+
+/* ==========================================
+  FOOTER
+========================================== */
+
+.footer {
+    text-align: center;
+
+    color: #77929A;
+    font-size: 0.83rem;
+
+    border-top: 1px solid #DCEBEC;
+
+    padding-top: 24px;
+    margin-top: 55px;
+}
+
+
+/* ==========================================
+  INPUT FIELDS
+========================================== */
+
+.stTextInput input {
+    border-radius: 10px;
+    border-color: #C9E2E0;
+    background: white;
+}
+
+.stTextInput input:focus {
+    border-color: #159D9B;
+}
+
+
+/* ==========================================
+  MOBILE RESPONSIVENESS
+========================================== */
+
+@media (max-width: 700px) {
+
+    .hero {
+        padding: 30px 22px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.45rem;
+    }
+
+    .brand {
+        font-size: 1.65rem;
+    }
+
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# ------------------------------------------------------------
+# 4. LOAD AND VALIDATE EXCEL DATABASE
+# ------------------------------------------------------------
 
 @st.cache_data
-def load_data(file_path, modified_time):
+def load_database(file_path, file_modified):
 
-    data = pd.read_excel(file_path)
+    if not Path(file_path).exists():
 
-    # Remove unnecessary spaces from column names
-    data.columns = data.columns.astype(str).str.strip()
+        raise FileNotFoundError(
+            "The Excel database could not be found. "
+            "Please upload portal.xlsx to the repository."
+        )
+
+    data = pd.read_excel(
+        file_path,
+        engine="openpyxl"
+    )
+
+    # Remove unnecessary spaces from column headings
+    data.columns = (
+        data.columns
+        .astype(str)
+        .str.strip()
+    )
 
     missing_columns = [
-        column for column in REQUIRED_COLUMNS
-        if column not in data.columns
+        col for col in REQUIRED_COLUMNS
+        if col not in data.columns
     ]
 
     if missing_columns:
+
         raise ValueError(
-            "The Excel file is missing the following columns: "
-            + ", ".join(missing_columns)
+            f"Missing Excel columns: {missing_columns}"
         )
 
     # Retain only the required columns
     data = data[REQUIRED_COLUMNS].copy()
 
-    # Clean text values without changing row order
-    for column in REQUIRED_COLUMNS:
-        data[column] = (
-            data[column]
+    # Clean text without changing the row order
+    for col in REQUIRED_COLUMNS:
+
+        data[col] = (
+            data[col]
             .fillna("")
             .astype(str)
             .str.strip()
         )
 
-    # Remove rows without essential information
-    data = data[
-        (data[COL_IMPACT] != "")
-        & (data[COL_PRACTICE] != "")
-        & (data[COL_CHALLENGE] != "")
-        & (data[COL_LEAN] != "")
-    ].copy()
+    # Remove incomplete records
+    data = data.replace("", pd.NA)
 
-    # Reset index while preserving Excel order
-    data.reset_index(drop=True, inplace=True)
-
-    return data
-
-
-if not EXCEL_FILE.exists():
-
-    st.error(
-        "The Excel data file 'portal.xlsx' could not be found. "
-        "Please place portal.xlsx in the same folder as app.py."
+    data = data.dropna(
+        subset=REQUIRED_COLUMNS
     )
 
-    st.stop()
+    # IMPORTANT:
+    # Original Excel row order is preserved.
+    # No sorting is applied to Lean principles.
+
+    return data.reset_index(drop=True)
 
 
 try:
 
-    df = load_data(
+    df = load_database(
         str(EXCEL_FILE),
-        EXCEL_FILE.stat().st_mtime
+        EXCEL_FILE.stat().st_mtime if EXCEL_FILE.exists() else 0
     )
 
 except Exception as error:
 
-    st.error(f"Unable to load the Excel data: {error}")
+    st.error(f"Database loading error: {error}")
+
+    st.info(
+        "Check that the Excel file is named portal.xlsx "
+        "or Portal.xlsx and is stored alongside app.py."
+    )
+
     st.stop()
 
 
-if df.empty:
+# ------------------------------------------------------------
+# 5. SESSION STATE
+# ------------------------------------------------------------
 
-    st.error("No valid records were found in the Excel file.")
-    st.stop()
+DEFAULTS = {
 
+    "page": "welcome",
 
-# ============================================================
-# SESSION STATE
-# ============================================================
+    "username": "",
 
-if "current_page" not in st.session_state:
-    st.session_state.current_page = 1
+    "selected_impact": None,
 
-if "selected_impact" not in st.session_state:
-    st.session_state.selected_impact = None
+    "selected_practice": None,
 
-if "selected_practice" not in st.session_state:
-    st.session_state.selected_practice = None
+    "selected_challenge": None
 
-if "selected_challenge" not in st.session_state:
-    st.session_state.selected_challenge = None
-
-
-def reset_application():
-
-    st.session_state.current_page = 1
-    st.session_state.selected_impact = None
-    st.session_state.selected_practice = None
-    st.session_state.selected_challenge = None
-
-
-def go_back():
-
-    if st.session_state.current_page > 1:
-        st.session_state.current_page -= 1
-
-
-# ============================================================
-# HEADER
-# ============================================================
-
-st.markdown(
-    """
-    <div class="brand-header">
-        <div class="brand-tag">Research Decision Support Platform</div>
-        <div class="brand-name">BLUEPATH</div>
-        <div class="brand-subtitle">
-            Blue Economy and Lean Principles for Marine Construction
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# PROGRESS INDICATOR
-# ============================================================
-
-page = st.session_state.current_page
-
-progress_values = {
-    1: 25,
-    2: 50,
-    3: 75,
-    4: 100
 }
 
-progress = progress_values[page]
+for key, value in DEFAULTS.items():
 
-step_labels = [
-    "Marine Impact",
-    "Blue Economy Practice",
-    "Implementation Challenge",
-    "Lean Principles"
-]
+    if key not in st.session_state:
 
-step_html = ""
-
-for index, label in enumerate(step_labels, start=1):
-
-    css_class = (
-        "progress-active"
-        if index <= page
-        else ""
-    )
-
-    step_html += (
-        f'<span class="{css_class}">{label}</span>'
-    )
+        st.session_state[key] = value
 
 
-st.markdown(
-    f"""
-    <div class="progress-wrapper">
-        <div class="progress-title">
-            DECISION PROCESS
+def reset_app():
+
+    st.session_state.page = "welcome"
+
+    st.session_state.username = ""
+
+    st.session_state.selected_impact = None
+
+    st.session_state.selected_practice = None
+
+    st.session_state.selected_challenge = None
+
+
+def go_home():
+
+    st.session_state.page = "impacts"
+
+    st.session_state.selected_impact = None
+
+    st.session_state.selected_practice = None
+
+    st.session_state.selected_challenge = None
+
+
+# ------------------------------------------------------------
+# 6. HEADER AND BRANDING
+# ------------------------------------------------------------
+
+col_logo, col_home = st.columns([3, 1])
+
+with col_logo:
+
+    st.markdown("""
+        <div class="brand">🌊 BluePath</div>
+
+        <div class="brand-subtitle">
+            BLUE ECONOMY × LEAN CONSTRUCTION
         </div>
+    """, unsafe_allow_html=True)
 
-        <div class="progress-track">
-            <div class="progress-fill"
-                 style="width: {progress}%;">
+
+with col_home:
+
+    if st.session_state.page != "welcome":
+
+        if st.button(
+            "🏠 Home",
+            use_container_width=True
+        ):
+
+            go_home()
+
+            st.rerun()
+
+
+# ------------------------------------------------------------
+# 7. PROGRESS INDICATOR
+# ------------------------------------------------------------
+
+PAGES = {
+
+    "welcome": 0,
+
+    "impacts": 1,
+
+    "practices": 2,
+
+    "challenges": 3,
+
+    "lean": 4
+
+}
+
+if st.session_state.page != "welcome":
+
+    current_step = PAGES[st.session_state.page]
+
+    st.progress(current_step / 4)
+
+    st.caption(
+        f"YOUR DECISION-MAKING JOURNEY | "
+        f"STEP {current_step} OF 4"
+    )
+
+
+# ============================================================
+# 8. WELCOME INTERFACE
+# ============================================================
+
+if st.session_state.page == "welcome":
+
+    st.markdown("""
+        <div class="hero animate">
+
+            <div style="font-size:48px;">
+                🌊 🚢 🌱
             </div>
+
+            <div class="hero-label">
+                MARINE CONSTRUCTION DECISION SUPPORT
+            </div>
+
+            <h1>
+                Welcome to BluePath
+            </h1>
+
+            <p>
+                Explore how Blue Economy practices can address
+                the environmental, social and economic impacts
+                of marine construction.
+
+                Discover how Lean principles can support the
+                successful implementation of these practices
+                and contribute to sustainable marine development.
+            </p>
+
+            <div style="
+                margin-top:22px;
+                font-size:14px;
+                font-weight:750;
+                color:#E1FFFF;
+                letter-spacing:1px;
+            ">
+                IDENTIFY IMPACTS · EXPLORE PRACTICES ·
+                ADDRESS CHALLENGES · DISCOVER LEAN SOLUTIONS
+            </div>
+
         </div>
+    """, unsafe_allow_html=True)
 
-        <div class="progress-steps">
-            {step_html}
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# PAGE 1: SELECT MARINE CONSTRUCTION IMPACT
-# ============================================================
-
-if page == 1:
 
     st.markdown(
-        '<div class="section-heading">'
-        '01 | Marine Construction Impact'
-        '</div>',
+        '<div class="section-title">Start your journey</div>',
         unsafe_allow_html=True
     )
 
     st.markdown(
-        """
+        '<div class="section-description">'
+        'Welcome! Enter your name to begin exploring '
+        'the BluePath decision-support platform.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    username = st.text_input(
+
+        "Your name",
+
+        placeholder="Enter your name here",
+
+        max_chars=60
+
+    )
+
+
+    st.markdown("### 📘 How to use BluePath")
+
+
+    instructions = [
+
+        (
+            "01",
+            "Identify Marine Construction Impacts",
+
+            "Explore the impacts associated with marine "
+            "construction and select an impact you wish to manage."
+        ),
+
+        (
+            "02",
+            "Explore Blue Economy Practices",
+
+            "Discover the suitable Blue Economy practices "
+            "associated with the selected marine construction impact."
+        ),
+
+        (
+            "03",
+            "Identify Implementation Challenges",
+
+            "Explore the challenges associated with implementing "
+            "each selected Blue Economy practice."
+        ),
+
+        (
+            "04",
+            "Discover Relevant Lean Principles",
+
+            "Identify all five Lean principles associated with "
+            "each challenge, presented according to their "
+            "individual priority rankings in the research database."
+        )
+
+    ]
+
+
+    for number, heading, description in instructions:
+
+        st.markdown(
+            f"""
+            <div class="info-card animate">
+
+                <span class="number-circle">
+                    {number}
+                </span>
+
+                <strong>
+                    {heading}
+                </strong>
+
+                <p style="
+                    color:#617D89;
+                    margin:10px 0 0 50px;
+                    line-height:1.7;
+                ">
+                    {description}
+                </p>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    st.markdown("")
+
+
+    if st.button(
+
+        "🚀 Start Exploring BluePath",
+
+        type="primary",
+
+        use_container_width=True
+
+    ):
+
+        if not username.strip():
+
+            st.warning(
+                "Please enter your name before continuing."
+            )
+
+        else:
+
+            st.session_state.username = username.strip()
+
+            st.session_state.page = "impacts"
+
+            st.rerun()
+
+
+# ============================================================
+# 9. MARINE CONSTRUCTION IMPACT SELECTION
+# ============================================================
+
+elif st.session_state.page == "impacts":
+
+    name = html.escape(
+        st.session_state.username
+    )
+
+
+    st.markdown(
+        f"""
+        <div class="section-title animate">
+            Hello, {name}! 👋
+        </div>
+
         <div class="section-description">
-            Select the environmental, social or economic impact
-            associated with the marine construction project.
-            The system will identify the relevant Blue Economy practices.
+            Welcome to your BluePath journey.
+
+            Begin by identifying the marine construction
+            impact that you wish to manage.
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    impacts = df[COL_IMPACT].drop_duplicates().tolist()
 
-    search_impact = st.text_input(
-        "Search marine construction impacts",
-        placeholder="Enter a keyword to filter the impact list..."
+    st.markdown("""
+        <div class="notice">
+
+            <strong>
+                STEP 1 | Select a Marine Construction Impact
+            </strong>
+
+            <br>
+
+            Explore the impacts listed below and select
+            one to discover suitable Blue Economy practices.
+
+        </div>
+    """, unsafe_allow_html=True)
+
+
+    impacts = (
+        df[IMPACT_COL]
+        .drop_duplicates()
+        .tolist()
     )
 
-    filtered_impacts = [
-        impact for impact in impacts
-        if search_impact.lower() in impact.lower()
-    ]
 
-    if not filtered_impacts:
+    st.markdown(
+        f"**{len(impacts)} impacts identified in the database**"
+    )
 
-        st.warning("No matching marine construction impacts found.")
 
-    else:
+    # Two-column interactive impact cards
+    cols = st.columns(2)
 
-        selected = st.selectbox(
-            "Available marine construction impacts",
-            options=filtered_impacts,
-            index=None,
-            placeholder="Select a marine construction impact"
-        )
 
-        st.caption(
-            f"{len(filtered_impacts)} impact categories available"
-        )
+    for i, impact in enumerate(impacts):
 
-        if selected:
-
-            impact_records = df[
-                df[COL_IMPACT] == selected
-            ]
-
-            practices_count = (
-                impact_records[COL_PRACTICE]
-                .nunique()
-            )
-
-            challenges_count = (
-                impact_records[COL_CHALLENGE]
-                .nunique()
-            )
+        with cols[i % 2]:
 
             st.markdown(
                 f"""
-                <div class="selection-panel">
-                    <div class="selection-title">
-                        Selected marine construction impact
-                    </div>
-                    <div class="selection-text">
-                        {html.escape(selected)}
-                    </div>
+                <div class="info-card animate">
+
+                    <span class="number-circle">
+                        {i+1}
+                    </span>
+
+                    <strong>
+                        {html.escape(impact)}
+                    </strong>
+
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-            col1, col2 = st.columns(2)
-
-            with col1:
-
-                st.markdown(
-                    f"""
-                    <div class="metric-panel">
-                        <div class="metric-number">
-                            {practices_count}
-                        </div>
-                        <div class="metric-caption">
-                            Associated Blue Economy practices
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-            with col2:
-
-                st.markdown(
-                    f"""
-                    <div class="metric-panel">
-                        <div class="metric-number">
-                            {challenges_count}
-                        </div>
-                        <div class="metric-caption">
-                            Associated implementation challenges
-                        </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-            st.write("")
 
             if st.button(
-                "Continue to Blue Economy Practices",
-                type="primary",
+
+                f"Explore impact {i+1} →",
+
+                key=f"impact_{i}",
+
                 use_container_width=True
+
             ):
 
-                st.session_state.selected_impact = selected
+                st.session_state.selected_impact = impact
+
                 st.session_state.selected_practice = None
+
                 st.session_state.selected_challenge = None
-                st.session_state.current_page = 2
+
+                st.session_state.page = "practices"
 
                 st.rerun()
 
 
 # ============================================================
-# PAGE 2: SELECT BLUE ECONOMY PRACTICE
+# 10. BLUE ECONOMY PRACTICE SELECTION
 # ============================================================
 
-elif page == 2:
+elif st.session_state.page == "practices":
 
     impact = st.session_state.selected_impact
 
-    if not impact:
 
-        reset_application()
+    if impact is None:
+
+        go_home()
+
         st.rerun()
 
+
     st.markdown(
-        '<div class="section-heading">'
-        '02 | Blue Economy Practice'
+        '<div class="step-label">'
+        'STEP 2 | BLUE ECONOMY RESPONSE'
         '</div>',
         unsafe_allow_html=True
     )
 
+
     st.markdown(
-        """
-        <div class="section-description">
-            Identify the Blue Economy practice that can address
-            the selected marine construction impact.
-            Only practices associated with the selected impact
-            are displayed.
-        </div>
-        """,
+        '<div class="section-title">'
+        'Suitable Blue Economy Practices to Manage the Impact'
+        '</div>',
         unsafe_allow_html=True
     )
+
 
     st.markdown(
         f"""
-        <div class="selection-panel">
-            <div class="small-label">Selected impact</div>
-            <div class="selection-text">
-                {html.escape(impact)}
-            </div>
+        <div class="notice">
+
+            <strong>Selected Marine Construction Impact:</strong>
+
+            <br>
+
+            {html.escape(impact)}
+
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    impact_data = df[
-        df[COL_IMPACT] == impact
-    ]
 
     practices = (
-        impact_data[COL_PRACTICE]
-        .drop_duplicates()
-        .tolist()
-    )
-
-    search_practice = st.text_input(
-        "Search Blue Economy practices",
-        placeholder="Enter a practice or keyword..."
-    )
-
-    filtered_practices = [
-        practice for practice in practices
-        if search_practice.lower() in practice.lower()
-    ]
-
-    st.caption(
-        f"{len(filtered_practices)} relevant practices identified"
-    )
-
-    if not filtered_practices:
-
-        st.warning("No matching practices found.")
-
-    else:
-
-        selected = st.selectbox(
-            "Available Blue Economy practices",
-            options=filtered_practices,
-            index=None,
-            placeholder="Select a Blue Economy practice"
-        )
-
-        if selected:
-
-            practice_data = impact_data[
-                impact_data[COL_PRACTICE] == selected
-            ]
-
-            challenges_count = (
-                practice_data[COL_CHALLENGE].nunique()
-            )
-
-            st.markdown(
-                f"""
-                <div class="selection-panel">
-                    <div class="selection-title">
-                        Selected Blue Economy practice
-                    </div>
-                    <div class="selection-text">
-                        {html.escape(selected)}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            st.info(
-                f"{challenges_count} implementation challenges "
-                "are associated with this practice and impact."
-            )
-
-            if st.button(
-                "Continue to Implementation Challenges",
-                type="primary",
-                use_container_width=True
-            ):
-
-                st.session_state.selected_practice = selected
-                st.session_state.selected_challenge = None
-                st.session_state.current_page = 3
-
-                st.rerun()
-
-    st.divider()
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        if st.button("Back to Marine Impacts"):
-            st.session_state.current_page = 1
-            st.rerun()
-
-    with col2:
-
-        if st.button("Start Again"):
-            reset_application()
-            st.rerun()
-
-
-# ============================================================
-# PAGE 3: SELECT IMPLEMENTATION CHALLENGE
-# ============================================================
-
-elif page == 3:
-
-    impact = st.session_state.selected_impact
-    practice = st.session_state.selected_practice
-
-    if not impact or not practice:
-
-        reset_application()
-        st.rerun()
-
-    st.markdown(
-        '<div class="section-heading">'
-        '03 | Implementation Challenge'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <div class="section-description">
-            Select the challenge that affects the implementation
-            of the chosen Blue Economy practice.
-            The available challenges are filtered using both
-            previous selections.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        f"""
-        <div class="selection-panel">
-            <div class="small-label">Selected marine construction impact</div>
-            <div class="selection-text">
-                {html.escape(impact)}
-            </div>
-            <br>
-            <div class="small-label">Selected Blue Economy practice</div>
-            <div class="selection-text">
-                {html.escape(practice)}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    practice_data = df[
-        (df[COL_IMPACT] == impact)
-        & (df[COL_PRACTICE] == practice)
-    ]
-
-    challenges = (
-        practice_data[COL_CHALLENGE]
-        .drop_duplicates()
-        .tolist()
-    )
-
-    search_challenge = st.text_input(
-        "Search implementation challenges",
-        placeholder="Enter a challenge or keyword..."
-    )
-
-    filtered_challenges = [
-        challenge for challenge in challenges
-        if search_challenge.lower() in challenge.lower()
-    ]
-
-    st.caption(
-        f"{len(filtered_challenges)} relevant challenges identified"
-    )
-
-    if not filtered_challenges:
-
-        st.warning("No matching implementation challenges found.")
-
-    else:
-
-        selected = st.selectbox(
-            "Available implementation challenges",
-            options=filtered_challenges,
-            index=None,
-            placeholder="Select an implementation challenge"
-        )
-
-        if selected:
-
-            challenge_data = practice_data[
-                practice_data[COL_CHALLENGE] == selected
-            ]
-
-            lean_count = (
-                challenge_data[COL_LEAN]
-                .drop_duplicates()
-                .shape[0]
-            )
-
-            st.markdown(
-                f"""
-                <div class="selection-panel">
-                    <div class="selection-title">
-                        Selected implementation challenge
-                    </div>
-                    <div class="selection-text">
-                        {html.escape(selected)}
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            st.info(
-                f"{lean_count} unique Lean principle records "
-                "are associated with this selection."
-            )
-
-            if st.button(
-                "Generate Lean Principle Recommendations",
-                type="primary",
-                use_container_width=True
-            ):
-
-                st.session_state.selected_challenge = selected
-                st.session_state.current_page = 4
-
-                st.rerun()
-
-    st.divider()
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        if st.button("Back to Blue Economy Practices"):
-            st.session_state.current_page = 2
-            st.rerun()
-
-    with col2:
-
-        if st.button("Start Again"):
-            reset_application()
-            st.rerun()
-
-
-# ============================================================
-# PAGE 4: LEAN PRINCIPLE RECOMMENDATIONS
-# ============================================================
-
-elif page == 4:
-
-    impact = st.session_state.selected_impact
-    practice = st.session_state.selected_practice
-    challenge = st.session_state.selected_challenge
-
-    if not impact or not practice or not challenge:
-
-        reset_application()
-        st.rerun()
-
-    st.markdown(
-        '<div class="section-heading">'
-        '04 | Lean Principle Recommendations'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <div class="section-description">
-            The following Lean principles are associated with
-            the selected marine construction impact, Blue Economy
-            practice and implementation challenge.
-            The displayed sequence follows the order of records
-            in the original Excel dataset.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    # Filter using all three selections
-    result = df[
-        (df[COL_IMPACT] == impact)
-        & (df[COL_PRACTICE] == practice)
-        & (df[COL_CHALLENGE] == challenge)
-    ].copy()
-
-    # Preserve Excel sequence and remove duplicate Lean principles
-    result = result.drop_duplicates(
-        subset=[COL_LEAN],
-        keep="first"
-    ).reset_index(drop=True)
-
-    lean_principles = result[COL_LEAN].tolist()
-
-    # Summary of selected criteria
-    st.markdown(
-        f"""
-        <div class="selection-panel">
-            <div class="small-label">Marine construction impact</div>
-            <div class="selection-text">
-                {html.escape(impact)}
-            </div>
-            <br>
-            <div class="small-label">Blue Economy practice</div>
-            <div class="selection-text">
-                {html.escape(practice)}
-            </div>
-            <br>
-            <div class="small-label">Implementation challenge</div>
-            <div class="selection-text">
-                {html.escape(challenge)}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        '<div class="section-heading">'
-        'Identified Lean Principles'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    st.caption(
-        "Principles are presented in their original dataset order."
-    )
-
-    if len(lean_principles) == 5:
-
-        st.success(
-            "Five unique Lean principles have been identified "
-            "for the selected decision pathway."
-        )
-
-    else:
-
-        st.warning(
-            f"The dataset contains {len(lean_principles)} "
-            "unique Lean principle(s) for this selection, "
-            "rather than five. All available records are displayed "
-            "without generating additional recommendations."
-        )
-
-    if not lean_principles:
-
-        st.error(
-            "No Lean principles were identified for this selection."
-        )
-
-    else:
-
-        for index, principle in enumerate(
-            lean_principles,
-            start=1
-        ):
-
-            st.markdown(
-                f"""
-                <div class="result-panel">
-                    <span class="result-number">
-                        {index:02d}
-                    </span>
-                    <span class="result-name">
-                        {html.escape(principle)}
-                    </span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-    # ========================================================
-    # DECISION SUMMARY
-    # ========================================================
-
-    st.markdown(
-        '<div class="section-heading">'
-        'Decision Summary'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
-    summary_data = pd.DataFrame(
-        [
-            {
-                "Decision criterion": "Marine construction impact",
-                "Selected option": impact
-            },
-            {
-                "Decision criterion": "Blue Economy practice",
-                "Selected option": practice
-            },
-            {
-                "Decision criterion": "Implementation challenge",
-                "Selected option": challenge
-            },
-            {
-                "Decision criterion": "Number of Lean principles",
-                "Selected option": str(len(lean_principles))
-            }
+        df.loc[
+            df[IMPACT_COL] == impact,
+            PRACTICE_COL
         ]
+        .drop_duplicates()
+        .tolist()
     )
 
-    st.dataframe(
-        summary_data,
-        use_container_width=True,
-        hide_index=True
+
+    st.write(
+        "The following Blue Economy practices are associated "
+        "with the selected impact."
     )
 
-    # ========================================================
-    # EXPORT RESULTS
-    # ========================================================
 
     st.markdown(
-        '<div class="section-heading">'
-        'Export Decision Results'
-        '</div>',
-        unsafe_allow_html=True
+        f"**{len(practices)} suitable practices identified**"
     )
 
-    if not result.empty:
 
-        export_data = result.copy()
+    for i, practice in enumerate(practices):
 
-        export_data.insert(
-            0,
-            "Selected Marine Construction Impact",
-            impact
+        st.markdown(
+            f"""
+            <div class="info-card animate">
+
+                <span class="number-circle">
+                    {i+1}
+                </span>
+
+                <strong>
+                    {html.escape(practice)}
+                </strong>
+
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        export_data.insert(
-            1,
-            "Selected Blue Economy Practice",
-            practice
-        )
-
-        export_data.insert(
-            2,
-            "Selected Implementation Challenge",
-            challenge
-        )
-
-        csv_data = export_data.to_csv(
-            index=False
-        ).encode("utf-8-sig")
-
-        st.download_button(
-            label="Download Decision Results (CSV)",
-            data=csv_data,
-            file_name="bluepath_decision_results.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-    st.divider()
-
-    # ========================================================
-    # NAVIGATION
-    # ========================================================
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
 
         if st.button(
-            "Back to Challenges",
+
+            "Explore implementation challenges →",
+
+            key=f"practice_{i}",
+
             use_container_width=True
+
         ):
 
-            st.session_state.current_page = 3
-            st.rerun()
-
-    with col2:
-
-        if st.button(
-            "New Decision",
-            type="primary",
-            use_container_width=True
-        ):
-
-            reset_application()
-            st.rerun()
-
-    with col3:
-
-        if st.button(
-            "Change Blue Economy Practice",
-            use_container_width=True
-        ):
+            st.session_state.selected_practice = practice
 
             st.session_state.selected_challenge = None
-            st.session_state.current_page = 2
+
+            st.session_state.page = "challenges"
+
+            st.rerun()
+
+
+    st.divider()
+
+
+    if st.button("← Back to Marine Construction Impacts"):
+
+        st.session_state.page = "impacts"
+
+        st.rerun()
+
+
+# ============================================================
+# 11. BLUE ECONOMY IMPLEMENTATION CHALLENGES
+# ============================================================
+
+elif st.session_state.page == "challenges":
+
+    impact = st.session_state.selected_impact
+
+    practice = st.session_state.selected_practice
+
+
+    if impact is None or practice is None:
+
+        go_home()
+
+        st.rerun()
+
+
+    st.markdown(
+        '<div class="step-label">'
+        'STEP 3 | IMPLEMENTATION CHALLENGES'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-title">'
+        'Challenges in Implementing Each Blue Economy Practice '
+        'in Marine Construction'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        f"""
+        <div class="notice">
+
+            <strong>Selected Impact:</strong>
+
+            <br>
+
+            {html.escape(impact)}
+
+            <br><br>
+
+            <strong>Selected Blue Economy Practice:</strong>
+
+            <br>
+
+            {html.escape(practice)}
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    filtered = df[
+
+        (df[IMPACT_COL] == impact) &
+
+        (df[PRACTICE_COL] == practice)
+
+    ]
+
+
+    challenges = (
+        filtered[CHALLENGE_COL]
+        .drop_duplicates()
+        .tolist()
+    )
+
+
+    st.write(
+        "Select a challenge to discover the Lean principles "
+        "that can help address it."
+    )
+
+
+    st.markdown(
+        f"**{len(challenges)} implementation challenges identified**"
+    )
+
+
+    for i, challenge in enumerate(challenges):
+
+        st.markdown(
+            f"""
+            <div class="info-card animate">
+
+                <span class="number-circle">
+                    {i+1}
+                </span>
+
+                <strong>
+                    {html.escape(challenge)}
+                </strong>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+        if st.button(
+
+            "Discover relevant Lean principles →",
+
+            key=f"challenge_{i}",
+
+            use_container_width=True
+
+        ):
+
+            st.session_state.selected_challenge = challenge
+
+            st.session_state.page = "lean"
+
+            st.rerun()
+
+
+    st.divider()
+
+
+    if st.button("← Back to Blue Economy Practices"):
+
+        st.session_state.page = "practices"
+
+        st.rerun()
+
+
+# ============================================================
+# 12. LEAN PRINCIPLE PRIORITY IDENTIFICATION
+# ============================================================
+
+elif st.session_state.page == "lean":
+
+    impact = st.session_state.selected_impact
+
+    practice = st.session_state.selected_practice
+
+    challenge = st.session_state.selected_challenge
+
+
+    if not all([impact, practice, challenge]):
+
+        go_home()
+
+        st.rerun()
+
+
+    st.markdown(
+        '<div class="step-label">'
+        'STEP 4 | LEAN-ENABLED SOLUTIONS'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        '<div class="section-title">'
+        'Pertinent Lean Principles to Minimise Blue Economy '
+        'Challenges in Marine Construction'
+        '</div>',
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        f"""
+        <div class="notice">
+
+            <strong>Selected Impact:</strong>
+
+            <br>
+
+            {html.escape(impact)}
+
+            <br><br>
+
+            <strong>Selected Practice:</strong>
+
+            <br>
+
+            {html.escape(practice)}
+
+            <br><br>
+
+            <strong>Selected Challenge:</strong>
+
+            <br>
+
+            {html.escape(challenge)}
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    # Filter records matching all criteria to retrieve the exact 5 Lean principles in original database row order
+    lean_rows = df[
+
+        (df[IMPACT_COL] == impact) &
+
+        (df[PRACTICE_COL] == practice) &
+
+        (df[CHALLENGE_COL] == challenge)
+
+    ]
+
+
+    lean_principles = lean_rows[LEAN_COL].tolist()
+
+
+    st.write(
+        "The following five Lean principles are prioritized "
+        "according to your research records to address this specific challenge."
+    )
+
+
+    st.markdown(
+        f"**{len(lean_principles)} prioritized Lean principles identified**"
+    )
+
+
+    for i, principle in enumerate(lean_principles):
+
+        st.markdown(
+            f"""
+            <div class="lean-card animate">
+
+                <div class="priority-label">
+                    PRIORITY RANK {i+1} OF {len(lean_principles)}
+                </div>
+
+                <div style="font-size: 1.1rem; font-weight: 750; color: #165B33; margin-top: 6px;">
+                    {html.escape(principle)}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    st.divider()
+
+
+    col_back, col_restart = st.columns(2)
+
+
+    with col_back:
+
+        if st.button("← Back to Implementation Challenges", use_container_width=True):
+
+            st.session_state.page = "challenges"
+
+            st.rerun()
+
+
+    with col_restart:
+
+        if st.button("🔄 Start Again", use_container_width=True, type="primary"):
+
+            reset_app()
+
             st.rerun()
 
 
 # ============================================================
-# FOOTER
+# 13. FOOTER
 # ============================================================
 
-st.markdown(
-    """
-    <div class="app-footer">
-        BLUEPATH | Blue Economy and Lean Construction
-        Decision Support System
-        <br>
-        Research-based decision support for marine infrastructure projects
+st.markdown("""
+    <div class="footer">
+        BluePath Research Platform · Powered by Streamlit & Python
     </div>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
