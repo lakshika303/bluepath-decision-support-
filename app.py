@@ -32,11 +32,11 @@ REQUIRED_COLUMNS = [IMPACT_COL, PRACTICE_COL, CHALLENGE_COL, LEAN_COL]
 EXPECTED_LEAN_COUNT = 5
 
 # ------------------------------------------------------------
-# CUSTOM DESIGN
+# CUSTOM DESIGN & ENHANCED VISUAL POLISH
 # ------------------------------------------------------------
 st.markdown("""
 <style>
-/* ---------- Base ---------- */
+/* ---------- Base Layout ---------- */
 .stApp {
     background: linear-gradient(145deg, #F3F8F8 0%, #F6FBFC 55%, #F1F7F4 100%);
     color: #1F3A44;
@@ -65,7 +65,7 @@ st.markdown("""
     text-transform: uppercase;
 }
 
-/* ---------- Hero ---------- */
+/* ---------- Hero Section ---------- */
 .hero {
     background: linear-gradient(125deg, #0A6A72 0%, #0D8A8F 55%, #2BA88A 100%);
     border-radius: 18px;
@@ -96,7 +96,7 @@ st.markdown("""
     text-transform: uppercase;
 }
 
-/* ---------- Section headings ---------- */
+/* ---------- Section Headings ---------- */
 .section-title {
     font-size: 1.5rem;
     font-weight: 750;
@@ -118,36 +118,33 @@ st.markdown("""
     margin-bottom: 4px;
 }
 
-/* ---------- Content panel (background for each step) ---------- */
+/* ---------- Content Panels & Cards ---------- */
 .content-panel {
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.94);
     border: 1px solid #D5E6E8;
     border-radius: 16px;
-    padding: 22px 22px 18px 22px;
+    padding: 24px;
     margin-bottom: 18px;
     box-shadow: 0 4px 16px rgba(30, 80, 90, 0.05);
 }
 
-/* ---------- Cards ---------- */
 .info-card {
-    background: #FFFFFF;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FAFCFC 100%);
     border: 1px solid #D5E6E8;
-    border-left: 4px solid #0A6E74;
+    border-left: 5px solid #0A6E74;
     border-radius: 12px;
-    padding: 16px 16px 14px 16px;
-    margin-bottom: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
     box-shadow: 0 2px 10px rgba(30, 80, 90, 0.04);
-    transition: all 0.22s ease;
-    cursor: pointer;
+    transition: all 0.25s ease;
 }
 .info-card:hover {
     transform: translateY(-3px);
-    border-left-color: #E05A5A;          /* soft red accent on hover */
-    box-shadow: 0 8px 20px rgba(30, 80, 90, 0.09);
+    border-left-color: #E05A5A;
+    box-shadow: 0 8px 22px rgba(224, 90, 90, 0.12);
     background: #FFF9F9;
 }
 
-/* Pathway cards (welcome page) – stronger red feedback */
 .pathway-card {
     background: #FFFFFF;
     border: 1px solid #D5E6E8;
@@ -179,14 +176,14 @@ st.markdown("""
     flex-shrink: 0;
 }
 
-/* ---------- Lean principle cards ---------- */
+/* ---------- Lean Principle Cards ---------- */
 .lean-card {
     background: linear-gradient(120deg, #EDF7F1 0%, #F6FBF7 100%);
     border: 1px solid #C5E0CF;
     border-left: 5px solid #1E7A4A;
     border-radius: 12px;
     padding: 16px 18px;
-    margin-bottom: 11px;
+    margin-bottom: 12px;
     transition: all 0.22s ease;
 }
 .lean-card:hover {
@@ -202,33 +199,35 @@ st.markdown("""
     margin-bottom: 3px;
 }
 
-/* ---------- Notice ---------- */
+/* ---------- Notice Banner ---------- */
 .notice {
-    background: #EAF5F5;
-    border-left: 4px solid #0D8A8A;
-    border-radius: 8px;
-    padding: 13px 16px;
-    margin: 14px 0 18px 0;
+    background: linear-gradient(135deg, #EAF5F5 0%, #E2F0F0 100%);
+    border-left: 5px solid #0D8A8A;
+    border-radius: 10px;
+    padding: 15px 18px;
+    margin: 14px 0 20px 0;
     color: #2A4A52;
     line-height: 1.6;
-    font-size: 0.94rem;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(13, 138, 138, 0.05);
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- Custom Buttons with Arrow Accents ---------- */
 .stButton > button {
-    min-height: 42px;
+    min-height: 44px;
     border-radius: 10px;
     border: 1px solid #C5DCD9;
     background: #FFFFFF;
     color: #0A6E74;
     font-weight: 650;
-    transition: all 0.2s ease;
+    transition: all 0.22s ease;
 }
 .stButton > button:hover {
-    background: #E8F4F2;
-    border-color: #0D8A8A;
-    color: #064E52;
+    background: #FFF1F1;
+    border-color: #E05A5A;
+    color: #C0392B;
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(224, 90, 90, 0.15);
 }
 .stButton > button[kind="primary"] {
     background: linear-gradient(100deg, #0A6E74, #1A9A90);
@@ -236,8 +235,9 @@ st.markdown("""
     border: none;
 }
 .stButton > button[kind="primary"]:hover {
-    background: #085A5F;
+    background: linear-gradient(100deg, #C0392B, #E05A5A);
     color: white;
+    box-shadow: 0 4px 12px rgba(224, 90, 90, 0.25);
 }
 
 /* ---------- Progress ---------- */
@@ -376,7 +376,7 @@ if st.session_state.page == "welcome":
         max_chars=60
     )
 
-    st.markdown("#### Decision pathway")
+    st.markdown("#### Decision pathway overview")
 
     steps = [
         ("01", "Select marine construction impact",
@@ -424,7 +424,7 @@ elif st.session_state.page == "impacts":
     st.markdown("""
         <div class="notice">
             <strong>Step 1  →  Marine Construction Impact</strong><br>
-            Impacts appear in the order recorded in the research database.
+            Impacts appear in the order recorded in the research database. Select one to proceed.
         </div>
     """, unsafe_allow_html=True)
 
@@ -432,6 +432,7 @@ elif st.session_state.page == "impacts":
 
     impacts = df[IMPACT_COL].drop_duplicates().tolist()
     st.markdown(f"**{len(impacts)} impacts available**")
+    st.write("")
 
     cols = st.columns(2)
     for i, impact in enumerate(impacts):
@@ -442,7 +443,7 @@ elif st.session_state.page == "impacts":
                     <strong>{html.escape(impact)}</strong>
                 </div>
             """, unsafe_allow_html=True)
-            if st.button(f"Select  →", key=f"impact_{i}", use_container_width=True):
+            if st.button(f"Explore impact {i+1}  →", key=f"impact_{i}", use_container_width=True):
                 st.session_state.selected_impact = impact
                 st.session_state.selected_practice = None
                 st.session_state.selected_challenge = None
@@ -469,7 +470,7 @@ elif st.session_state.page == "practices":
 
     st.markdown(f"""
         <div class="notice">
-            <strong>Selected impact</strong><br>
+            <strong>Selected Impact</strong><br>
             {html.escape(impact)}
         </div>
     """, unsafe_allow_html=True)
@@ -482,6 +483,7 @@ elif st.session_state.page == "practices":
         .tolist()
     )
     st.markdown(f"**{len(practices)} practices linked to this impact**")
+    st.write("")
 
     for i, practice in enumerate(practices):
         st.markdown(f"""
@@ -490,7 +492,7 @@ elif st.session_state.page == "practices":
                 <strong>{html.escape(practice)}</strong>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("Select this practice  →", key=f"practice_{i}", use_container_width=True):
+        if st.button(f"Select practice {i+1}  →", key=f"practice_{i}", use_container_width=True):
             st.session_state.selected_practice = practice
             st.session_state.selected_challenge = None
             st.session_state.page = "challenges"
@@ -528,9 +530,9 @@ elif st.session_state.page == "challenges":
 
     st.markdown(f"""
         <div class="notice">
-            <strong>Selected impact</strong><br>
+            <strong>Selected Impact</strong><br>
             {html.escape(impact)}<br><br>
-            <strong>Selected Blue Economy practice</strong><br>
+            <strong>Selected Blue Economy Practice</strong><br>
             {html.escape(practice)}
         </div>
     """, unsafe_allow_html=True)
@@ -540,6 +542,7 @@ elif st.session_state.page == "challenges":
     filtered = df[(df[IMPACT_COL] == impact) & (df[PRACTICE_COL] == practice)]
     challenges = filtered[CHALLENGE_COL].drop_duplicates().tolist()
     st.markdown(f"**{len(challenges)} challenges identified**")
+    st.write("")
 
     for i, challenge in enumerate(challenges):
         st.markdown(f"""
@@ -548,7 +551,7 @@ elif st.session_state.page == "challenges":
                 <strong>{html.escape(challenge)}</strong>
             </div>
         """, unsafe_allow_html=True)
-        if st.button("View Lean principles  →", key=f"challenge_{i}", use_container_width=True):
+        if st.button(f"View Lean principles {i+1}  →", key=f"challenge_{i}", use_container_width=True):
             st.session_state.selected_challenge = challenge
             st.session_state.page = "lean"
             st.rerun()
@@ -586,11 +589,11 @@ elif st.session_state.page == "lean":
 
     st.markdown(f"""
         <div class="notice">
-            <strong>Selected impact</strong><br>
+            <strong>Selected Impact</strong><br>
             {html.escape(impact)}<br><br>
-            <strong>Selected Blue Economy practice</strong><br>
+            <strong>Selected Blue Economy Practice</strong><br>
             {html.escape(practice)}<br><br>
-            <strong>Selected implementation challenge</strong><br>
+            <strong>Selected Implementation Challenge</strong><br>
             {html.escape(challenge)}
         </div>
     """, unsafe_allow_html=True)
@@ -611,10 +614,11 @@ elif st.session_state.page == "lean":
             f"**{len(lean_principles)} Lean principles** "
             "(shown in the exact priority order from the research database)"
         )
+        st.write("")
         for idx, principle in enumerate(lean_principles, start=1):
             st.markdown(f"""
                 <div class="lean-card">
-                    <div class="priority-label">Priority {idx}</div>
+                    <div class="priority-label">Priority Rank {idx} of {len(lean_principles)}</div>
                     <strong style="font-size:1.04rem; color:#1A4A3A;">
                         {html.escape(principle)}
                     </strong>
