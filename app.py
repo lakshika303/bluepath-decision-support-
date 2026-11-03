@@ -1,5 +1,6 @@
 import html
 from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
@@ -13,7 +14,7 @@ st.set_page_config(
     page_title="BluePath | Blue Economy × Lean Construction",
     page_icon="🌊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # ------------------------------------------------------------
@@ -31,137 +32,118 @@ REQUIRED_COLUMNS = [IMPACT_COL, PRACTICE_COL, CHALLENGE_COL, LEAN_COL]
 EXPECTED_LEAN_COUNT = 5
 
 # ------------------------------------------------------------
-# ADVANCED CUSTOM DESIGN & PROFESSIONAL STYLING
+# CUSTOM DESIGN
 # ------------------------------------------------------------
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 .stApp {
-    background: linear-gradient(135deg, #F4F7F6 0%, #FAFDFC 100%);
-    color: #1E293B;
-    font-family: 'Inter', system-ui, sans-serif;
+    background: linear-gradient(145deg, #F3F8F8 0%, #F6FBFC 55%, #F1F7F4 100%);
+    color: #1F3A44;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
-
 #MainMenu, footer, header { visibility: hidden; }
-
 .block-container {
-    max-width: 1200px;
-    padding-top: 1.5rem;
-    padding-bottom: 4rem;
+    max-width: 1140px;
+    padding-top: 1.2rem;
+    padding-bottom: 2.5rem;
 }
 
-/* ---------- Sidebar Styling ---------- */
-[data-testid="stSidebar"] {
-    background-color: #0F2D33;
-    color: #F8FAFC;
-    padding: 20px 10px;
-}
-[data-testid="stSidebar"] .sidebar-brand {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #38BDF8;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
-}
-[data-testid="stSidebar"] .sidebar-sub {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #94A3B8;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-}
-[data-testid="stSidebar"] hr {
-    border-color: #1E3A40;
-    margin: 20px 0;
-}
-
-/* ---------- Typography & Headers ---------- */
+/* Typography */
 .brand {
-    font-size: 2rem;
+    font-size: 1.85rem;
     font-weight: 800;
-    letter-spacing: -0.8px;
+    letter-spacing: -0.6px;
     color: #0A6E74;
     margin-bottom: 2px;
 }
 .brand-subtitle {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 3px;
+    letter-spacing: 2.8px;
     color: #5A7A84;
     text-transform: uppercase;
 }
+.page-title {
+    font-size: 1.55rem;
+    font-weight: 750;
+    color: #0D5F66;
+    margin: 4px 0 6px 0;
+}
+.section-title {
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: #0D5F66;
+    margin: 10px 0 6px 0;
+}
+.section-description {
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: #4A6A74;
+    margin-bottom: 14px;
+}
+.step-label {
+    font-size: 0.72rem;
+    letter-spacing: 2.2px;
+    font-weight: 750;
+    color: #0D8A8A;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.caption-text {
+    font-size: 0.82rem;
+    color: #6A848C;
+}
 
+/* Hero */
 .hero {
-    background: linear-gradient(135deg, #0A6A72 0%, #0D8A8F 55%, #1F9D8A 100%);
-    border-radius: 20px;
-    padding: 45px 40px;
-    margin: 15px 0 30px 0;
+    background: linear-gradient(125deg, #0A6A72 0%, #0D8A8F 55%, #2BA88A 100%);
+    border-radius: 18px;
+    padding: 36px 34px;
+    margin: 12px 0 22px 0;
     color: white;
-    box-shadow: 0 14px 32px rgba(10, 110, 116, 0.16);
+    box-shadow: 0 12px 28px rgba(10, 110, 116, 0.18);
 }
 .hero h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    line-height: 1.2;
-    margin: 8px 0 14px 0;
+    line-height: 1.25;
+    margin: 6px 0 12px 0;
     color: white;
 }
 .hero p {
-    font-size: 1.05rem;
-    line-height: 1.75;
+    font-size: 1.02rem;
+    line-height: 1.7;
     color: #E8F7F7;
-    max-width: 800px;
+    max-width: 740px;
     margin: 0;
 }
 .hero-label {
-    font-size: 0.75rem;
-    letter-spacing: 2.8px;
+    font-size: 0.72rem;
+    letter-spacing: 2.5px;
     font-weight: 700;
     color: #C8EFEF;
     text-transform: uppercase;
 }
 
-.section-title {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #0D5F66;
-    margin: 6px 0 8px 0;
-}
-.section-description {
-    font-size: 1rem;
-    line-height: 1.65;
-    color: #4A6A74;
-    margin-bottom: 20px;
-}
-.step-label {
-    font-size: 0.75rem;
-    letter-spacing: 2.5px;
-    font-weight: 750;
-    color: #0D8A8A;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-}
-
-/* ---------- Panels & Cards ---------- */
+/* Cards & panels */
 .content-panel {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.96);
     border: 1px solid #D5E6E8;
-    border-radius: 18px;
-    padding: 28px;
-    margin-bottom: 20px;
-    box-shadow: 0 6px 20px rgba(30, 80, 90, 0.04);
+    border-radius: 16px;
+    padding: 20px 20px 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(30, 80, 90, 0.05);
 }
-
 .info-card {
     background: linear-gradient(135deg, #FFFFFF 0%, #FAFCFC 100%);
     border: 1px solid #D5E6E8;
     border-left: 5px solid #0A6E74;
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 10px rgba(30, 80, 90, 0.03);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 11px;
+    box-shadow: 0 2px 10px rgba(30, 80, 90, 0.04);
     transition: all 0.25s ease;
 }
 .info-card:hover {
@@ -170,14 +152,13 @@ st.markdown("""
     box-shadow: 0 8px 22px rgba(224, 90, 90, 0.12);
     background: #FFF9F9;
 }
-
 .pathway-card {
     background: #FFFFFF;
     border: 1px solid #D5E6E8;
     border-left: 5px solid #0A6E74;
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 14px;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
     transition: all 0.25s ease;
 }
 .pathway-card:hover {
@@ -186,30 +167,29 @@ st.markdown("""
     transform: translateX(4px);
     box-shadow: 0 6px 18px rgba(224, 90, 90, 0.12);
 }
-
 .number-circle {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    width: 34px;
-    height: 34px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: #E4F3F1;
     color: #0A6E74;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 750;
-    margin-right: 14px;
+    margin-right: 11px;
     flex-shrink: 0;
 }
 
-/* ---------- Lean Principle Cards ---------- */
+/* Lean cards */
 .lean-card {
     background: linear-gradient(120deg, #EDF7F1 0%, #F6FBF7 100%);
     border: 1px solid #C5E0CF;
     border-left: 5px solid #1E7A4A;
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 14px;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
     transition: all 0.22s ease;
 }
 .lean-card:hover {
@@ -217,31 +197,78 @@ st.markdown("""
     box-shadow: 0 6px 16px rgba(40, 120, 80, 0.10);
 }
 .priority-label {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     font-weight: 750;
-    letter-spacing: 1.2px;
+    letter-spacing: 1.1px;
     color: #1E7A4A;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
-/* ---------- Notice Banner ---------- */
+/* Notice */
 .notice {
     background: linear-gradient(135deg, #EAF5F5 0%, #E2F0F0 100%);
     border-left: 5px solid #0D8A8A;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin: 16px 0 22px 0;
+    border-radius: 10px;
+    padding: 13px 16px;
+    margin: 12px 0 16px 0;
     color: #2A4A52;
-    line-height: 1.65;
-    font-size: 0.98rem;
-    box-shadow: 0 2px 8px rgba(13, 138, 138, 0.05);
+    line-height: 1.6;
+    font-size: 0.94rem;
 }
 
-/* ---------- Buttons ---------- */
-.stButton > button {
-    min-height: 46px;
+/* Summary / process box */
+.summary-box {
+    background: linear-gradient(135deg, #F0F9F7 0%, #E8F5F2 100%);
+    border: 1px solid #B8DCD4;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin: 16px 0;
+}
+.process-step {
+    display: inline-block;
+    background: white;
+    border: 1px solid #C5DCD9;
+    border-radius: 8px;
+    padding: 7px 12px;
+    margin: 3px 4px 3px 0;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #0A6E74;
+}
+.process-arrow {
+    color: #0D8A8A;
+    font-weight: 700;
+    margin: 0 3px;
+}
+
+/* Metric style cards */
+.metric-card {
+    background: white;
+    border: 1px solid #D5E6E8;
     border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(30, 80, 90, 0.04);
+}
+.metric-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0A6E74;
+    margin: 4px 0;
+}
+.metric-label {
+    font-size: 0.78rem;
+    color: #5A7A84;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* Buttons */
+.stButton > button {
+    min-height: 42px;
+    border-radius: 10px;
     border: 1px solid #C5DCD9;
     background: #FFFFFF;
     color: #0A6E74;
@@ -253,7 +280,6 @@ st.markdown("""
     border-color: #E05A5A;
     color: #C0392B;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(224, 90, 90, 0.15);
 }
 .stButton > button[kind="primary"] {
     background: linear-gradient(100deg, #0A6E74, #1A9A90);
@@ -263,17 +289,28 @@ st.markdown("""
 .stButton > button[kind="primary"]:hover {
     background: linear-gradient(100deg, #C0392B, #E05A5A);
     color: white;
-    box-shadow: 0 4px 12px rgba(224, 90, 90, 0.25);
 }
 
-/* ---------- Footer ---------- */
+/* Progress */
+.stProgress > div > div > div {
+    background: linear-gradient(90deg, #0A6E74, #3AA88A);
+}
+
+/* Footer */
 .footer {
     text-align: center;
     color: #6A848C;
-    font-size: 0.82rem;
+    font-size: 0.80rem;
     border-top: 1px solid #D8E8EA;
-    padding-top: 20px;
-    margin-top: 50px;
+    padding-top: 16px;
+    margin-top: 36px;
+}
+
+@media (max-width: 700px) {
+    .hero { padding: 24px 18px; }
+    .hero h1 { font-size: 1.75rem; }
+    .page-title { font-size: 1.35rem; }
+    .brand { font-size: 1.5rem; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -335,128 +372,164 @@ def go_home():
     st.session_state.selected_challenge = None
 
 # ------------------------------------------------------------
-# SIDEBAR NAVIGATION & APP METRICS
+# HEADER
 # ------------------------------------------------------------
-with st.sidebar:
-    st.markdown('<div class="sidebar-brand">🌊 BluePath</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-sub">Decision Support Matrix</div>', unsafe_allow_html=True)
-    
+col_logo, col_nav = st.columns([4, 1])
+with col_logo:
+    st.markdown("""
+        <div class="brand">BluePath</div>
+        <div class="brand-subtitle">Blue Economy × Lean Construction</div>
+    """, unsafe_allow_html=True)
+with col_nav:
     if st.session_state.page != "welcome":
-        if st.button("⌂ Return to Impacts Hub", use_container_width=True):
+        if st.button("⌂  Home", use_container_width=True):
             go_home()
             st.rerun()
-        if st.button("🔄 Restart Decision Pathway", use_container_width=True):
-            reset_app()
-            st.rerun()
-        st.markdown("---")
-    
-    st.markdown("### 📊 Database Metrics")
-    st.markdown(f"* **Total Records:** {len(df)}")
-    st.markdown(f"* **Unique Impacts:** {df[IMPACT_COL].nunique()}")
-    st.markdown(f"* **Blue Practices:** {df[PRACTICE_COL].nunique()}")
-    st.markdown(f"* **Challenges Mapped:** {df[CHALLENGE_COL].nunique()}")
-    
-    st.markdown("---")
-    st.markdown("### ℹ️ Research Guide")
-    st.caption("BluePath bridges marine engineering construction impacts with Blue Economy sustainability frameworks through prioritized Lean construction solutions.")
 
 # ------------------------------------------------------------
-# HEADER PROGRESS
+# PROGRESS
 # ------------------------------------------------------------
 PAGES = {"welcome": 0, "impacts": 1, "practices": 2, "challenges": 3, "lean": 4}
 if st.session_state.page != "welcome":
     step = PAGES[st.session_state.page]
     st.progress(step / 4)
-    st.caption(f"Decision Pathway Progress  →  Step {step} of 4")
+    st.caption(f"Decision pathway  →  Step {step} of 4")
 
 # ============================================================
-# 8. WELCOME & INTRODUCTION PAGE
+# 8. WELCOME
 # ============================================================
 if st.session_state.page == "welcome":
 
     st.markdown("""
         <div class="hero">
             <div class="hero-label">Research Decision-Support Platform</div>
-            <h1>BluePath: Blue Economy × Lean Construction</h1>
+            <h1>BluePath</h1>
             <p>
-                An interactive framework designed to assess marine construction impacts, 
-                explore robust Blue Economy responses, and implement prioritized Lean principles 
-                for sustainable project delivery.
+                Connect marine construction impacts with Blue Economy practices
+                and prioritised Lean principles to support sustainable implementation.
             </p>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-title">Welcome & Getting Started</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-title">Welcome</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-description">'
-        'Follow our structured 4-step decision pathway. Each step dynamically filters database records '
-        'to match your specific marine engineering context.'
+        'BluePath is a structured decision-support tool. It helps you systematically move from '
+        'a marine construction impact → relevant Blue Economy practice → implementation challenge → '
+        'prioritised Lean principles (in the exact order recorded in the research database).'
         '</div>',
         unsafe_allow_html=True
     )
 
-    username = st.text_input(
-        "Your Name or Professional Title (Optional)",
-        placeholder="e.g., Dr. Silva / Senior Researcher",
-        max_chars=60
-    )
+    # Process overview (inspired by the lifecycle images)
+    st.markdown('<div class="section-title">How the decision pathway works</div>', unsafe_allow_html=True)
 
-    st.markdown("#### 🧭 Core Decision Pathway")
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        st.markdown("""
+            <div class="metric-card">
+                <div class="metric-value">01</div>
+                <div class="metric-label">Impact</div>
+                <div class="caption-text" style="margin-top:6px;">Select marine construction impact</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with c2:
+        st.markdown("""
+            <div class="metric-card">
+                <div class="metric-value">02</div>
+                <div class="metric-label">Practice</div>
+                <div class="caption-text" style="margin-top:6px;">Choose linked Blue Economy practice</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with c3:
+        st.markdown("""
+            <div class="metric-card">
+                <div class="metric-value">03</div>
+                <div class="metric-label">Challenge</div>
+                <div class="caption-text" style="margin-top:6px;">Identify implementation barriers</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with c4:
+        st.markdown("""
+            <div class="metric-card">
+                <div class="metric-value">04</div>
+                <div class="metric-label">Lean</div>
+                <div class="caption-text" style="margin-top:6px;">Review prioritised principles</div>
+            </div>
+        """, unsafe_allow_html=True)
 
-    steps = [
-        ("01", "Select Marine Construction Impact",
-         "Identify environmental, social, or structural impacts caused by marine activities."),
-        ("02", "Select Blue Economy Practice",
-         "Discover suitable sustainability practices tailored to mitigate the selected impact."),
-        ("03", "Select Implementation Challenge",
-         "Examine specific operational and logistical barriers in marine environments."),
-        ("04", "Review Prioritized Lean Principles",
-         "Analyze the exact 5-tier Lean priority ranking derived from empirical research records.")
-    ]
+    st.markdown("""
+        <div style="text-align:center; margin:14px 0 20px 0; color:#0D8A8A; font-weight:600; font-size:0.95rem;">
+            Impact  →  Practice  →  Challenge  →  Prioritised Lean Principles
+        </div>
+    """, unsafe_allow_html=True)
 
-    for num, title, desc in steps:
+    # Quick stats
+    n_impacts = df[IMPACT_COL].nunique()
+    n_practices = df[PRACTICE_COL].nunique()
+    n_challenges = df[CHALLENGE_COL].nunique()
+
+    st.markdown('<div class="section-title">Database at a glance</div>', unsafe_allow_html=True)
+    m1, m2, m3 = st.columns(3)
+    with m1:
         st.markdown(f"""
-            <div class="pathway-card">
-                <span class="number-circle">{num}</span>
-                <strong>{title}</strong>
-                <p style="color:#4A6A74; margin:7px 0 0 48px; line-height:1.5; font-size:0.94rem;">
-                    {desc}
-                </p>
+            <div class="metric-card">
+                <div class="metric-value">{n_impacts}</div>
+                <div class="metric-label">Impacts</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with m2:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-value">{n_practices}</div>
+                <div class="metric-label">Practices</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with m3:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-value">{n_challenges}</div>
+                <div class="metric-label">Challenges</div>
             </div>
         """, unsafe_allow_html=True)
 
     st.write("")
-    if st.button("🚀 Launch Decision Pathway", type="primary", use_container_width=True):
+    username = st.text_input(
+        "Your name (optional)",
+        placeholder="Used only for personalisation in this session",
+        max_chars=60
+    )
+
+    if st.button("Start decision pathway  →", type="primary", use_container_width=True):
         st.session_state.username = username.strip()
         st.session_state.page = "impacts"
         st.rerun()
 
 # ============================================================
-# 9. STEP 1: IMPACTS SELECTION
+# 9. IMPACTS
 # ============================================================
 elif st.session_state.page == "impacts":
 
     name = html.escape(st.session_state.username) if st.session_state.username else "Researcher"
-
-    st.markdown(f'<div class="section-title">Welcome, {name}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="page-title">Hello, {name}</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-description">'
-        'Step 1: Choose the marine construction impact you wish to analyze and manage.'
+        'Select the marine construction impact you wish to manage. '
+        'Impacts appear in the order recorded in the research database.'
         '</div>',
         unsafe_allow_html=True
     )
 
     st.markdown("""
         <div class="notice">
-            <strong>Step 1 Guidance</strong><br>
-            Impacts are listed in original database sequence. Click any card below to filter associated Blue Economy practices.
+            <strong>Step 1  →  Marine Construction Impact</strong><br>
+            Choose one impact to explore the associated Blue Economy practices.
         </div>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="content-panel">', unsafe_allow_html=True)
-
     impacts = df[IMPACT_COL].drop_duplicates().tolist()
-    st.markdown(f"**{len(impacts)} construction impacts available in database**")
+    st.markdown(f"**{len(impacts)} impacts available**")
     st.write("")
 
     cols = st.columns(2)
@@ -468,17 +541,16 @@ elif st.session_state.page == "impacts":
                     <strong>{html.escape(impact)}</strong>
                 </div>
             """, unsafe_allow_html=True)
-            if st.button(f"Explore Impact {i+1}  →", key=f"impact_{i}", use_container_width=True):
+            if st.button(f"Select  →", key=f"impact_{i}", use_container_width=True):
                 st.session_state.selected_impact = impact
                 st.session_state.selected_practice = None
                 st.session_state.selected_challenge = None
                 st.session_state.page = "practices"
                 st.rerun()
-
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================================
-# 10. STEP 2: PRACTICES SELECTION
+# 10. PRACTICES
 # ============================================================
 elif st.session_state.page == "practices":
 
@@ -488,20 +560,16 @@ elif st.session_state.page == "practices":
         st.rerun()
 
     st.markdown('<div class="step-label">Step 2  →  Blue Economy Practice</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-title">Suitable Blue Economy Practices</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="page-title">Suitable Blue Economy practices</div>', unsafe_allow_html=True)
 
     st.markdown(f"""
         <div class="notice">
-            <strong>Active Impact Selection:</strong><br>
+            <strong>Selected Impact</strong><br>
             {html.escape(impact)}
         </div>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="content-panel">', unsafe_allow_html=True)
-
     practices = (
         df.loc[df[IMPACT_COL] == impact, PRACTICE_COL]
         .drop_duplicates()
@@ -517,27 +585,26 @@ elif st.session_state.page == "practices":
                 <strong>{html.escape(practice)}</strong>
             </div>
         """, unsafe_allow_html=True)
-        if st.button(f"Select Practice {i+1}  →", key=f"practice_{i}", use_container_width=True):
+        if st.button(f"Select practice  →", key=f"practice_{i}", use_container_width=True):
             st.session_state.selected_practice = practice
             st.session_state.selected_challenge = None
             st.session_state.page = "challenges"
             st.rerun()
-
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("←  Back to Impacts", use_container_width=True):
+        if st.button("←  Back to impacts", use_container_width=True):
             st.session_state.page = "impacts"
             st.rerun()
     with col2:
-        if st.button("🔄 Start Again", use_container_width=True):
+        if st.button("Start again", use_container_width=True):
             reset_app()
             st.rerun()
 
 # ============================================================
-# 11. STEP 3: CHALLENGES SELECTION
+# 11. CHALLENGES
 # ============================================================
 elif st.session_state.page == "challenges":
 
@@ -548,23 +615,21 @@ elif st.session_state.page == "challenges":
         st.rerun()
 
     st.markdown('<div class="step-label">Step 3  →  Implementation Challenge</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-title">Implementation Challenges</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="page-title">Challenges to implementing the selected practice</div>', unsafe_allow_html=True)
 
     st.markdown(f"""
         <div class="notice">
-            <strong>Selected Impact:</strong> {html.escape(impact)}<br>
-            <strong>Selected Practice:</strong> {html.escape(practice)}
+            <strong>Selected Impact</strong><br>
+            {html.escape(impact)}<br><br>
+            <strong>Selected Blue Economy Practice</strong><br>
+            {html.escape(practice)}
         </div>
     """, unsafe_allow_html=True)
 
     st.markdown('<div class="content-panel">', unsafe_allow_html=True)
-
     filtered = df[(df[IMPACT_COL] == impact) & (df[PRACTICE_COL] == practice)]
     challenges = filtered[CHALLENGE_COL].drop_duplicates().tolist()
-    st.markdown(f"**{len(challenges)} implementation challenges identified**")
+    st.markdown(f"**{len(challenges)} challenges identified**")
     st.write("")
 
     for i, challenge in enumerate(challenges):
@@ -574,26 +639,25 @@ elif st.session_state.page == "challenges":
                 <strong>{html.escape(challenge)}</strong>
             </div>
         """, unsafe_allow_html=True)
-        if st.button(f"View Lean Solutions {i+1}  →", key=f"challenge_{i}", use_container_width=True):
+        if st.button(f"View Lean principles  →", key=f"challenge_{i}", use_container_width=True):
             st.session_state.selected_challenge = challenge
             st.session_state.page = "lean"
             st.rerun()
-
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("←  Back to Practices", use_container_width=True):
+        if st.button("←  Back to practices", use_container_width=True):
             st.session_state.page = "practices"
             st.rerun()
     with col2:
-        if st.button("🔄 Start Again", use_container_width=True):
+        if st.button("Start again", use_container_width=True):
             reset_app()
             st.rerun()
 
 # ============================================================
-# 12. STEP 4: LEAN PRINCIPLES & SUMMARY CHARTS
+# 12. LEAN PRINCIPLES + VISUAL SUMMARY
 # ============================================================
 elif st.session_state.page == "lean":
 
@@ -604,22 +668,21 @@ elif st.session_state.page == "lean":
         go_home()
         st.rerun()
 
-    st.markdown('<div class="step-label">Step 4  →  Prioritized Lean Principles & Summary Analytics</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-title">Lean Solutions & Analytical Summary</div>',
-        unsafe_allow_html=True
-    )
+    st.markdown('<div class="step-label">Step 4  →  Prioritised Lean Principles</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-title">Lean principles to address the selected challenge</div>', unsafe_allow_html=True)
 
     st.markdown(f"""
         <div class="notice">
-            <strong>Impact:</strong> {html.escape(impact)}<br>
-            <strong>Practice:</strong> {html.escape(practice)}<br>
-            <strong>Challenge:</strong> {html.escape(challenge)}
+            <strong>Selected Impact</strong><br>
+            {html.escape(impact)}<br><br>
+            <strong>Selected Blue Economy Practice</strong><br>
+            {html.escape(practice)}<br><br>
+            <strong>Selected Implementation Challenge</strong><br>
+            {html.escape(challenge)}
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="content-panel">', unsafe_allow_html=True)
-
+    # Lean principles (Excel order preserved)
     filtered = df[
         (df[IMPACT_COL] == impact) &
         (df[PRACTICE_COL] == practice) &
@@ -627,84 +690,103 @@ elif st.session_state.page == "lean":
     ]
     lean_principles = filtered[LEAN_COL].tolist()
 
+    st.markdown('<div class="content-panel">', unsafe_allow_html=True)
+
     if not lean_principles:
         st.warning("No Lean principles found for this combination.")
     else:
-        st.markdown(f"**{len(lean_principles)} Prioritized Lean Principles (Database Order)**")
+        st.markdown(
+            f"**{len(lean_principles)} Lean principles** "
+            "(shown in the exact priority order from the research database)"
+        )
         st.write("")
         for idx, principle in enumerate(lean_principles, start=1):
             st.markdown(f"""
                 <div class="lean-card">
                     <div class="priority-label">Priority Rank {idx} of {len(lean_principles)}</div>
-                    <strong style="font-size:1.05rem; color:#1A4A3A;">
+                    <strong style="font-size:1.03rem; color:#1A4A3A;">
                         {html.escape(principle)}
                     </strong>
                 </div>
             """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown("### 📈 Summary Analytics & Distribution Overview")
-    st.caption("Visual distribution of practices and challenges across the selected impact domain.")
-
-    col_chart1, col_chart2 = st.columns(2)
-    
-    with col_chart1:
-        st.markdown("##### Practices Distribution per Impact")
-        impact_practice_counts = df[df[IMPACT_COL] == impact][PRACTICE_COL].value_counts()
-        st.bar_chart(impact_practice_counts)
-
-    with col_chart2:
-        st.markdown("##### Challenges Breakdown for Practice")
-        practice_challenge_counts = df[df[PRACTICE_COL] == practice][CHALLENGE_COL].value_counts()
-        st.bar_chart(practice_challenge_counts)
-
-    st.markdown("---")
-    st.markdown("### 📥 Executive Report Generation")
-    st.caption("Download a structured summary report of your current decision pathway.")
-
-    report_content = f"""BLUEPATH EXECUTIVE DECISION REPORT
-==================================================
-Generated on: Research Session
-User / Role: {st.session_state.username if st.session_state.username else 'General Researcher'}
-
-1. MARINE CONSTRUCTION IMPACT:
-{impact}
-
-2. SELECTED BLUE ECONOMY PRACTICE:
-{practice}
-
-3. IMPLEMENTATION CHALLENGE:
-{challenge}
-
-4. PRIORITIZED LEAN PRINCIPLES:
-"""
-    for idx, p in enumerate(lean_principles, 1):
-        report_content += f"   [{idx}] {p}\n"
-
-    report_content += "\n==================================================\nBluePath Platform · Sustainable Marine Construction"
-
-    st.download_button(
-        label="📄 Download Executive Summary Report (.txt)",
-        data=report_content,
-        file_name="BluePath_Decision_Summary.txt",
-        mime="text/plain",
-        use_container_width=True
-    )
+        if len(lean_principles) != EXPECTED_LEAN_COUNT:
+            st.caption(
+                f"Note: Expected {EXPECTED_LEAN_COUNT} principles. "
+                f"Found {len(lean_principles)} for this combination."
+            )
 
     st.markdown('</div>', unsafe_allow_html=True)
+
+    # ---------- VISUAL SUMMARY (instead of Excel) ----------
+    st.markdown('<div class="section-title">Decision path summary</div>', unsafe_allow_html=True)
+
+    st.markdown(f"""
+        <div class="summary-box">
+            <div style="font-size:0.75rem; font-weight:700; letter-spacing:1.5px; color:#0D8A8A; text-transform:uppercase; margin-bottom:10px;">
+                Process overview
+            </div>
+            <div style="line-height:2.05;">
+                <span class="process-step">① Impact</span>
+                <span class="process-arrow">→</span>
+                <span class="process-step">{html.escape(impact[:38] + ('…' if len(impact) > 38 else ''))}</span>
+                <br>
+                <span class="process-step">② Practice</span>
+                <span class="process-arrow">→</span>
+                <span class="process-step">{html.escape(practice[:38] + ('…' if len(practice) > 38 else ''))}</span>
+                <br>
+                <span class="process-step">③ Challenge</span>
+                <span class="process-arrow">→</span>
+                <span class="process-step">{html.escape(challenge[:38] + ('…' if len(challenge) > 38 else ''))}</span>
+                <br>
+                <span class="process-step">④ Lean priorities</span>
+                <span class="process-arrow">→</span>
+                <span class="process-step">{len(lean_principles)} principles (Excel order)</span>
+            </div>
+            <div style="margin-top:12px; font-size:0.91rem; color:#2A4A52;">
+                This pathway links a specific marine construction impact to a Blue Economy practice,
+                identifies a key implementation challenge, and surfaces the Lean principles
+                recorded as most relevant in the research database.
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Quick metric summary
+    s1, s2, s3 = st.columns(3)
+    with s1:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-value">1</div>
+                <div class="metric-label">Impact selected</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with s2:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-value">1</div>
+                <div class="metric-label">Practice selected</div>
+            </div>
+        """, unsafe_allow_html=True)
+    with s3:
+        st.markdown(f"""
+            <div class="metric-card">
+                <div class="metric-value">{len(lean_principles)}</div>
+                <div class="metric-label">Lean principles</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     st.divider()
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("←  Back to Challenges", use_container_width=True):
+        if st.button("←  Back to challenges", use_container_width=True):
             st.session_state.page = "challenges"
             st.rerun()
     with col2:
-        if st.button("⌂  Impacts Hub", use_container_width=True):
+        if st.button("⌂  Home", use_container_width=True):
             go_home()
             st.rerun()
     with col3:
-        if st.button("🔄 Start Again", type="primary", use_container_width=True):
+        if st.button("Start again  →", type="primary", use_container_width=True):
             reset_app()
             st.rerun()
 
@@ -713,7 +795,7 @@ User / Role: {st.session_state.username if st.session_state.username else 'Gener
 # ------------------------------------------------------------
 st.markdown("""
     <div class="footer">
-        BluePath · Research Decision-Support Platform<br>
-        Integrating Blue Economy Practices & Lean Construction Principles for Sustainable Marine Infrastructure
+        BluePath · Research decision-support platform<br>
+        Blue Economy practices × Lean principles for marine construction
     </div>
 """, unsafe_allow_html=True)
