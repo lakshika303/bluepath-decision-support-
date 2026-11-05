@@ -6,12 +6,12 @@ import streamlit as st
 
 # ============================================================
 # BLUEPATH
-# Blue Economy × Lean Construction
+# Marine Construction × Blue Economy × Lean Construction
 # Interactive Research Decision-Support Platform
 # ============================================================
 
 st.set_page_config(
-    page_title="BluePath | Blue Economy × Lean Construction",
+    page_title="BluePath | Marine Construction × Blue Economy × Lean Construction",
     page_icon="🌊",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -38,7 +38,6 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* ---------- New Background ---------- */
 .stApp {
     background: linear-gradient(160deg, #Eef7f6 0%, #F4FAFA 40%, #F0F7F5 100%);
     color: #1F3A44;
@@ -62,7 +61,7 @@ st.markdown("""
 .brand-subtitle {
     font-size: 0.68rem;
     font-weight: 700;
-    letter-spacing: 2.8px;
+    letter-spacing: 2.2px;
     color: #5A7A84;
     text-transform: uppercase;
 }
@@ -255,29 +254,6 @@ st.markdown("""
     letter-spacing: 0.8px;
 }
 
-/* Heatmap styles (inspired by the risk heat map) */
-.heatmap-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-    gap: 8px;
-    margin: 16px 0;
-}
-.heatmap-cell {
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-.hm-low { background: #4CAF50; }      /* Green */
-.hm-medium { background: #FFC107; color: #333; } /* Yellow */
-.hm-moderate { background: #FF9800; } /* Orange */
-.hm-high { background: #F44336; }     /* Red */
-
 /* Buttons */
 .stButton > button {
     min-height: 42px;
@@ -361,7 +337,6 @@ except Exception as e:
 # ------------------------------------------------------------
 DEFAULTS = {
     "page": "welcome",
-    "username": "",
     "selected_impact": None,
     "selected_practice": None,
     "selected_challenge": None,
@@ -373,7 +348,6 @@ for k, v in DEFAULTS.items():
 
 def reset_app():
     st.session_state.page = "welcome"
-    st.session_state.username = ""
     st.session_state.selected_impact = None
     st.session_state.selected_practice = None
     st.session_state.selected_challenge = None
@@ -392,7 +366,7 @@ col_logo, col_nav = st.columns([4, 1])
 with col_logo:
     st.markdown("""
         <div class="brand">BluePath</div>
-        <div class="brand-subtitle">Blue Economy × Lean Construction</div>
+        <div class="brand-subtitle">Marine Construction × Blue Economy × Lean Construction</div>
     """, unsafe_allow_html=True)
 with col_nav:
     if st.session_state.page != "welcome":
@@ -509,14 +483,7 @@ if st.session_state.page == "welcome":
         </div>
     """, unsafe_allow_html=True)
 
-    username = st.text_input(
-        "Your name (optional)",
-        placeholder="Used only for personalisation in this session",
-        max_chars=60
-    )
-
     if st.button("Start decision pathway  →", type="primary", use_container_width=True):
-        st.session_state.username = username.strip()
         st.session_state.page = "impacts"
         st.rerun()
 
@@ -525,8 +492,7 @@ if st.session_state.page == "welcome":
 # ============================================================
 elif st.session_state.page == "impacts":
 
-    name = html.escape(st.session_state.username) if st.session_state.username else "Researcher"
-    st.markdown(f'<div class="page-title">Hello, {name}</div>', unsafe_allow_html=True)
+    st.markdown('<div class="page-title">Select Marine Construction Impact</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-description">'
         'Select the marine construction impact you wish to manage. '
@@ -672,7 +638,7 @@ elif st.session_state.page == "challenges":
             st.rerun()
 
 # ============================================================
-# 12. LEAN PRINCIPLES + HEATMAP SUMMARY + FEEDBACK
+# 12. LEAN PRINCIPLES + FEEDBACK
 # ============================================================
 elif st.session_state.page == "lean":
 
@@ -725,92 +691,6 @@ elif st.session_state.page == "lean":
             """, unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # ---------- IMPACT-LEVEL SUMMARY + HEATMAP ----------
-    st.markdown('<div class="section-title">Full Impact Summary & Heatmap</div>', unsafe_allow_html=True)
-
-    impact_df = df[df[IMPACT_COL] == impact]
-    total_practices = impact_df[PRACTICE_COL].nunique()
-    total_challenges = impact_df[CHALLENGE_COL].nunique()
-    total_records = len(impact_df)
-
-    st.markdown(f"""
-        <div class="summary-box">
-            <div style="font-size:0.75rem; font-weight:700; letter-spacing:1.5px; color:#0D8A8A; text-transform:uppercase; margin-bottom:10px;">
-                Complete view of the selected Impact
-            </div>
-            <div style="line-height:1.8; font-size:0.95rem;">
-                <strong>Impact:</strong> {html.escape(impact)}<br>
-                This impact is linked to <strong>{total_practices}</strong> Blue Economy practices,
-                <strong>{total_challenges}</strong> unique challenges, and 
-                <strong>{total_records}</strong> total records in the research database.
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # KPI row
-    s1, s2, s3 = st.columns(3)
-    with s1:
-        st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-value">{total_practices}</div>
-                <div class="metric-label">Practices</div>
-            </div>
-        """, unsafe_allow_html=True)
-    with s2:
-        st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-value">{total_challenges}</div>
-                <div class="metric-label">Challenges</div>
-            </div>
-        """, unsafe_allow_html=True)
-    with s3:
-        st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-value">{len(lean_principles)}</div>
-                <div class="metric-label">Lean (this path)</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    # ---------- HEATMAP (HTML version) ----------
-    st.markdown("#### Lean Principle Distribution Heatmap (under this Impact)")
-    st.caption("Colour scale: Green (Low) → Yellow → Orange → Red (High frequency)")
-
-    # Count how many times each Lean principle appears under this Impact
-    lean_counts = impact_df[LEAN_COL].value_counts().head(12)  # top 12 for clean display
-
-    if not lean_counts.empty:
-        # Create simple colour classes based on frequency
-        max_count = lean_counts.max()
-        cells_html = ""
-        for principle, count in lean_counts.items():
-            ratio = count / max_count if max_count > 0 else 0
-            if ratio >= 0.75:
-                cls = "hm-high"
-            elif ratio >= 0.5:
-                cls = "hm-moderate"
-            elif ratio >= 0.25:
-                cls = "hm-medium"
-            else:
-                cls = "hm-low"
-            short_name = (principle[:18] + "…") if len(principle) > 18 else principle
-            cells_html += f'''
-                <div class="heatmap-cell {cls}" title="{html.escape(principle)}: {count}">
-                    {count}
-                </div>
-            '''
-
-        st.markdown(f"""
-            <div class="heatmap-container">
-                {cells_html}
-            </div>
-            <div style="font-size:0.82rem; color:#5A7A84; margin-top:8px;">
-                Each cell shows how many times a Lean principle appears under the selected Impact.
-                Hover over a cell to see the full principle name.
-            </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.info("No Lean principle data available for heatmap.")
-
     # ---------- FEEDBACK ----------
     st.markdown('<div class="section-title">Your feedback</div>', unsafe_allow_html=True)
     st.markdown(
@@ -851,6 +731,6 @@ elif st.session_state.page == "lean":
 st.markdown("""
     <div class="footer">
         BluePath · Research decision-support platform<br>
-        Blue Economy practices × Lean principles for marine construction
+        Marine Construction × Blue Economy × Lean Construction
     </div>
 """, unsafe_allow_html=True)
